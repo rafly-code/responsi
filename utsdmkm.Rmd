@@ -1,0 +1,66 @@
+---
+title: "Untitled"
+author: "Rafly Amanatulla"
+date: "10/27/2020"
+output:
+  word_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+#input data flag
+library(psych)
+library(caret)
+data <- read.csv(file = "D:/Dua/PJJ Semester 5 3SI1/DMKM (Pak Ibnu)/UTS dataset/flag.csv", header = TRUE, sep = ";")
+head(data)
+```
+```{r}
+sum(is.na(data))
+```
+Maka tidak terdapat data yang hilang.
+
+```{r}
+str(data)
+```
+
+
+Pertama data yang dimilik dibagi menjadi data training dan data tes dengan perbandingan 80% dan 20%
+
+```{r}
+sampel <- sample(2,nrow(data),replace = T,prob = c(0.8,0.2))
+trainingdata <- data[sampel==1,]
+testdata <- data[sampel==2,]
+
+head(trainingdata)
+```
+
+```{r}
+head(testdata)
+```
+
+Analisis Regresi Berganda
+Karena yang dibutuhkan adalah memprediksi Agama berdasarkan bendera maka data yang dibutuhkan adalah data religion sebagai variable dependent dan sisanya sebagai variable independent.
+
+```{r}
+##pairs.panels(trainingdata[,6:30])
+```
+
+```{r}
+modelreg<-lm(trainingdata$religion~trainingdata$bars+trainingdata$stripes+trainingdata$colours+trainingdata$red+trainingdata$green+trainingdata$blue+trainingdata$gold+trainingdata$white+trainingdata$black+trainingdata$orange+trainingdata$mainjue+trainingdata$circles+trainingdata$crosses+trainingdata$saltires+trainingdata$quartes+trainingdata$sunstars+trainingdata$crescent+trainingdata$triangle+trainingdata$icon+trainingdata$animate+trainingdata$text+trainingdata$topleft+trainingdata$botright, data=trainingdata)
+summary(modelreg)
+```
+```{r}
+prediksi <- predict(modelreg, testdata)
+prediksi
+```
+
+```{r}
+u <- union(prediksi, trainingdata$religion)
+t <- table(factor(prediksi, u), factor(trainingdata$religion, u))
+confusionMatrix(t)
+```
